@@ -1,0 +1,360 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Chinese (P.R.C.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#include ""res\\ProjectBill.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""     // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\ProjectBill.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG_DATABASE DIALOGEX 0, 0, 382, 293
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "DtaBaseSetting"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDC_BT_OK,207,267,50,19
+    PUSHBUTTON      "Cancel",IDC_BT_CANCEL,292,267,50,19
+    GROUPBOX        "Loggin Option",IDC_STATIC,6,11,168,85
+    LTEXT           "Server:",IDC_STATIC,18,26,25,8
+    LTEXT           "UserName:",IDC_STATIC,18,44,36,8
+    LTEXT           "Password:",IDC_STATIC,18,62,34,8
+    CONTROL         "",IDC_IPADDRESS_DBSERVER,"SysIPAddress32",WS_TABSTOP,60,22,102,14
+    EDITTEXT        IDC_EDIT_USER,60,40,102,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PWD,60,58,102,14,ES_PASSWORD | ES_AUTOHSCROLL
+    CONTROL         "",IDC_LIST_INFO,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,18,126,204,108
+    GROUPBOX        "Test Option",IDC_STATIC,6,113,347,140
+    PUSHBUTTON      "Create",IDC_BUTTON_CREATE,228,220,48,14
+    GROUPBOX        "Dabase Option",IDC_STATIC,180,11,173,85
+    LTEXT           "Type:",IDC_STATIC,192,26,20,8
+    LTEXT           "Name:",IDC_STATIC,192,44,22,8
+    LTEXT           "Table:",IDC_STATIC,192,62,21,8
+    COMBOBOX        IDC_COMBO_DBTYPE,222,24,120,37,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_DATABASENAME,222,40,120,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TABLE,222,58,120,14,ES_AUTOHSCROLL
+    LTEXT           "",IDC_STATIC_TESTLOG,18,235,204,14
+    EDITTEXT        IDC_EDIT_TABLE_SN,276,126,66,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TABLE_WIFI,276,143,66,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TABLE_BT,276,161,66,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TABLE_IMEI1,276,178,66,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_TABLE_IMEI2,276,197,66,14,ES_AUTOHSCROLL
+    CONTROL         "SN->",IDC_CHECK_SN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,228,127,33,10
+    CONTROL         "WIFI->",IDC_CHECK_WIFI,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,228,145,40,10
+    CONTROL         "BT->",IDC_CHECK_BT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,228,163,32,10
+    CONTROL         "IMEI1->",IDC_CHECK_IMEI1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,228,180,43,10
+    CONTROL         "IMEI2->",IDC_CHECK_IMEI2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,228,199,43,10
+    LTEXT           "Index:",IDC_STATIC_INDEX,192,80,22,8
+    COMBOBOX        IDC_COMBO_INDEX,222,78,54,30,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DIALOG_DATABASE, DIALOG
+    BEGIN
+        RIGHTMARGIN, 374
+        VERTGUIDE, 6
+        VERTGUIDE, 18
+        VERTGUIDE, 60
+        VERTGUIDE, 162
+        VERTGUIDE, 174
+        VERTGUIDE, 180
+        VERTGUIDE, 192
+        VERTGUIDE, 222
+        VERTGUIDE, 228
+        VERTGUIDE, 276
+        VERTGUIDE, 312
+        VERTGUIDE, 342
+        VERTGUIDE, 353
+        BOTTOMMARGIN, 270
+        HORZGUIDE, 11
+        HORZGUIDE, 36
+        HORZGUIDE, 54
+        HORZGUIDE, 72
+        HORZGUIDE, 90
+        HORZGUIDE, 96
+        HORZGUIDE, 132
+        HORZGUIDE, 150
+        HORZGUIDE, 168
+        HORZGUIDE, 185
+        HORZGUIDE, 204
+        HORZGUIDE, 210
+        HORZGUIDE, 234
+        HORZGUIDE, 240
+        HORZGUIDE, 253
+        HORZGUIDE, 276
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_PROJECTBILL_MENU MENU 
+BEGIN
+    POPUP "User"
+    BEGIN
+        MENUITEM "Login",                       ID_USER_LOGIN
+        MENUITEM "Logout",                      ID_USER_LOGOUT
+    END
+    POPUP "Setting"
+    BEGIN
+        MENUITEM "DataBase",                    ID_SETTING_DATABASE
+    END
+END
+
+#endif    // Chinese (P.R.C.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About ProjectBill"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
+    LTEXT           "ProjectBill, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2015",IDC_STATIC,42,26,114,8
+    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
+END
+
+IDD_PROJECTBILL_DIALOG DIALOGEX 0, 0, 399, 339
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "ProjectBill"
+MENU IDR_PROJECTBILL_MENU
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Generate",IDC_BUTTON_GENBILL,227,290,50,14
+    EDITTEXT        IDC_EDIT_SN,45,19,120,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SNLENGTH,45,38,37,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_WIFIMAC,46,81,121,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_WIFIMACLENGTH,47,101,37,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_BTMAC,45,140,120,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_BTMACLENGTH,45,159,37,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_IMEI1,47,196,120,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_IMEI1LENGTH,47,215,37,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_IMEI2,45,263,120,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_IMEI2LENGTH,45,282,37,14,ES_AUTOHSCROLL
+    GROUPBOX        "SN",IDC_STATIC_GRPSN,6,6,168,56
+    LTEXT           "Start:",IDC_STATIC_SNSTART,16,22,20,8
+    LTEXT           "Length:",IDC_STATIC_SNLENGTH,15,38,26,8
+    GROUPBOX        "WifiMac:",IDC_STATIC_GRPWIFIMAC,6,67,168,58
+    GROUPBOX        "IMEI1",IDC_STATIC_GRPIMEI1,6,188,168,56
+    LTEXT           "Start:",IDC_STATIC_IMEI1START,17,199,20,8
+    LTEXT           "Length:",IDC_STATIC_IMEI1LENGTH,17,215,26,8
+    GROUPBOX        "BtMac",IDC_STATIC_GRPBTMAC,6,127,168,56
+    LTEXT           "Start:",IDC_STATIC_BTMACSTART,16,143,20,8
+    LTEXT           "Length:",IDC_STATIC_BTMACLENGTH,15,159,26,8
+    LTEXT           "Start:",IDC_STATIC_WIFIMACSTART,18,85,20,8
+    LTEXT           "Length:",IDC_STATIC_WIFIMACLENGTH,17,101,26,8
+    GROUPBOX        "IMEI2",IDC_STATIC_GRP_IMEI2,6,252,168,55
+    LTEXT           "Start:",IDC_STATIC_IMEI2START,17,268,20,8
+    LTEXT           "Length:",IDC_STATIC_IMEI2LENGTH,17,285,26,8
+    LTEXT           "Span",IDC_STATIC_SNSPAN,95,41,17,8
+    LTEXT           "Span",IDC_STATIC_WIFISPAN,94,104,17,8
+    LTEXT           "Span",IDC_STATIC_BTSPAN,97,160,17,8
+    LTEXT           "Span",IDC_STATIC_IMEI1SPAN,93,217,17,8
+    LTEXT           "Span",IDC_STATIC_IMEI2SPAN,93,285,17,8
+    EDITTEXT        IDC_EDIT_SNSPAN,119,38,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_WIFISPAN,118,102,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_BTSPAN,121,158,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_IMEI1SPAN,117,215,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_IMEI2SPAN,117,282,40,14,ES_AUTOHSCROLL
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",WS_BORDER,234,21,105,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 163
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+
+    IDD_PROJECTBILL_DIALOG, DIALOG
+    BEGIN
+        VERTGUIDE, 6
+        VERTGUIDE, 174
+        VERTGUIDE, 210
+        VERTGUIDE, 234
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904e4"
+        BEGIN
+            VALUE "CompanyName", "TODO: <Company name>"
+            VALUE "FileDescription", "TODO: <File description>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "ProjectBill.exe"
+            VALUE "LegalCopyright", "TODO: (c) <Company name>.  All rights reserved."
+            VALUE "OriginalFilename", "ProjectBill.exe"
+            VALUE "ProductName", "TODO: <Product name>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About ProjectBill..."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#include "res\ProjectBill.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"     // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
