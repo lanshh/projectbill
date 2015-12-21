@@ -94,7 +94,7 @@ BOOL CDatabaseSettingDlg::OnInitDialog()
     // Create Columns
 	m_ListTable.InsertHiddenLabelColumn();	// Requires one never uses column 0
     /* ListViewForTableInitial(GetDlgItem(hWnd,IDC_LIST_INFO)); **/
-    for(int col = 0; col < 10 ; ++col) {
+    for(int col = 0; col < 3 ; ++col) {
         CGridColumnTrait* pTrait = NULL;
 		if (col==0) {
 			CGridColumnTraitCombo* pComboTrait = new CGridColumnTraitCombo;
@@ -123,8 +123,18 @@ BOOL CDatabaseSettingDlg::OnInitDialog()
             pComboTrait->AddItem((DWORD_PTR)0,TEXT("3"));
 			pTrait = pComboTrait;
 		}
-
 		m_ListTable.InsertColumnTrait(col+1, TEXT(""), LVCFMT_LEFT, 100, col, pTrait);
+    }
+
+    int nItem = 0;
+    for(size_t rowId = 0; rowId < 2 ; ++rowId)
+    {
+    
+        nItem = m_ListTable.InsertItem(++nItem, TEXT("12"));
+        for(int col = 0; col < 2 ; ++col)
+        {
+
+        }
 
     }
     return TRUE;  // return TRUE  unless you set the focus to a control

@@ -11,7 +11,7 @@
 #define new DEBUG_NEW
 #endif
 #define WM_UPDATE_MSG       (WM_USER+111)
-
+#define PROCESS_PERCENT     1
 UINT GenThread(LPVOID lpParam)
 {
     CProjectBillDlg * ProjBill;
@@ -61,7 +61,7 @@ END_MESSAGE_MAP()
 
 
 CProjectBillDlg::CProjectBillDlg(CWnd* pParent /*=NULL*/)
-	: CDialog(CProjectBillDlg::IDD, pParent),SnwtoolDataBase(&m_Configs,&m_LocalLang)
+	: CDialog(CProjectBillDlg::IDD, pParent),SnwtoolDataBase(&m_Configs,&m_LocalLang),m_pGenThread(NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -84,7 +84,9 @@ BEGIN_MESSAGE_MAP(CProjectBillDlg, CDialog)
 	//}}AFX_MSG_MAP
     ON_COMMAND(ID_SETTING_DATABASE, &CProjectBillDlg::OnSettingDatabase)
     ON_BN_CLICKED(IDC_BUTTON_GENBILL, &CProjectBillDlg::OnBnClickedButtonGenbill)
+    ON_MESSAGE(WM_UPDATE_MSG,&CProjectBillDlg::OnHandleUpdateMsg)
     ON_WM_CLOSE()
+    ON_UPDATE_COMMAND_UI(ID_SETTING_DATABASE, &CProjectBillDlg::OnUpdateSettingDatabase)
 END_MESSAGE_MAP()
 
 
@@ -123,13 +125,14 @@ BOOL CProjectBillDlg::OnInitDialog()
             m_strModulePath = MyexeFullPath;
         }
     }
-
+    m_AddProgress.SetRange( 0, 100 );
     /*configs **/
     bool bLoadConfig = m_Configs.LoadToolSetting((LPCTSTR)(m_strModulePath + TEXT("config.ini")));
     if(!bLoadConfig) {
         AfxMessageBox(TEXT("Can not load config file!!!"));
         exit(0);
     }
+
     for(int i = 0 ; i < FLAG_CNT; i++) {
         SetDlgItemText(IDC_EDIT_SN + i,m_Configs.strItemStart[FLAG_SN + i].c_str());
     }
@@ -144,10 +147,6 @@ BOOL CProjectBillDlg::OnInitDialog()
         SetDlgItemText(IDC_EDIT_SNSPAN + i,szTemp);
     }
 
-
-
-
-    
     InitGroupControls();
 
 	// Set the icon for this dialog.  The framework does this automatically
@@ -211,7 +210,6 @@ HCURSOR CProjectBillDlg::OnQueryDragIcon()
 void CProjectBillDlg::OnSettingDatabase()
 {
     // TODO: Add your command handler code here
-        // TODO: Add your command handler code here
     CDatabaseSettingDlg dlgConfig(m_Configs,m_LocalLang);
     if(IDOK == dlgConfig.DoModal() ) {
         m_Configs.SaveToolSetting(std::wstring(TEXT("")));
@@ -228,86 +226,217 @@ void CProjectBillDlg::InitGroupControls()
     m_GrpImei2.EnableWindow(m_Configs.bItemUsed[4]);
 }
 
-void CProjectBillDlg::UpdateTestStatus(int State, int nResult,const TCHAR* strItem,TCHAR* strDesc)
+void CProjectBillDlg::UpdateTestStatus(int Msg, int MsgId,VOID *strDesc)
 {
-    SendMessage(WM_UPDATE_MSG,(WPARAM)strItem,(LPARAM)strDesc);
+    PostMessage(Msg,(WPARAM)MsgId,(LPARAM)strDesc);
 }
-
+#if 0
 UINT CProjectBillDlg::GenThread(LPVOID lpParam)
 {
-    TCHAR szItem[FLAG_CNT][256];
-    int    nMaxCount;
-    RECORD RecordInput;
+    TCHAR   szPrompt[260];
+    TCHAR   szItem[FLAG_CNT][256]   = {0};
+    int     nItemCount[FLAG_CNT]    = {0};
+    int     nSnSpan,nWifiMacSpan,nBtMacSnSpan,nImei1SnSpan,nImei2SnSpan;
+    int     nMaxCount               = 0;
+    DWORD   dwTicks         = GetTickCount();
+    RECORD  RecordInput;
     vector<RECORD> vItemsInput;
+    vItemsInput.clear();
+    UpdateTestStatus(WM_UPDATE_MSG,PROCESS_PERCENT,0);
     if(!SnwtoolDataBase.OpenTableForAddNew()){
         AfxMessageBox(TEXT("Faild open table"));
+        return -1;
     }
-    nMaxCount = 0;
-    for(int i = FLAG_SN; i <FLAG_CNT;i ++ ) {
-        swprintf(szItem[i - FLAG_SN],256,m_Configs.strItemStart[i - FLAG_SN].c_str());
-        nMaxCount = (m_Configs.nItemCount[i - FLAG_SN] > nMaxCount)?m_Configs.nItemCount[i - FLAG_SN]:nMaxCount;
-    }
-    m_AddProgress.SetRange( 0, 100 );
-    m_AddProgress.SetPos(0);
-    for(int j = 0; j < nMaxCount ; j++ ) {
-        for(int i = FLAG_SN;i < FLAG_CNT; i ++ ) {
-            RecordInput.m_strItem[i - FLAG_SN] = szItem[i - FLAG_SN];
+    for(int i = 0; i <FLAG_CNT;i ++ ) {
+        nItemCount[i]  = m_Configs.strItemStart[i].empty()?0:m_Configs.nItemCount[i];
+        if(0 < nItemCount[i] ) {
+            swprintf(szItem[i],256,m_Configs.strItemStart[i].c_str());
         }
+        nMaxCount   = (nItemCount[i] > nMaxCount)?nItemCount[i]:nMaxCount;
+    }
+    nSnSpan         = m_Configs.nItemSpan[0];
+    nWifiMacSpan    = m_Configs.nItemSpan[1];
+    nBtMacSnSpan    = m_Configs.nItemSpan[2];
+    nImei1SnSpan    = m_Configs.nItemSpan[3]; 
+    nImei2SnSpan    = m_Configs.nItemSpan[4];
+    int j;
+    for(j = 0; j < nMaxCount ; j++ ) {
+        for(int i = 0;i < FLAG_CNT; i ++ ) {
+            if(j < nItemCount[i]) {
+                RecordInput.m_strItem[i] = szItem[i];
+            } else if(j == nItemCount[i]){
+                RecordInput.m_strItem[i].clear();
+            }
+        }
+        vItemsInput.push_back(RecordInput);
+        if(25 == vItemsInput.size()) {
+            if(!SnwtoolDataBase.AddItems2Database(vItemsInput)) {
+                swprintf(szPrompt,dim(szPrompt),TEXT("Faild add item %d"),j);
+                AfxMessageBox(szPrompt);
+                return -1;
+            }
+            vItemsInput.clear();
+            UpdateTestStatus(WM_UPDATE_MSG,PROCESS_PERCENT,(void *)((j*100)/nMaxCount));
+        }
+        if(j < nItemCount[FLAG_SN])     IntStrIncreaseSkipAlpha (szItem[FLAG_SN],nSnSpan);
+        if(j < nItemCount[FLAG_WIFIMAC])HexStrIncreaseSkipAlpha (szItem[FLAG_WIFIMAC],nWifiMacSpan);
+        if(j < nItemCount[FLAG_BTMAC])  HexStrIncreaseSkipAlpha (szItem[FLAG_BTMAC],nBtMacSnSpan);
+        if(j < nItemCount[FLAG_IMEI1])  ImeiInc(szItem[FLAG_IMEI1],nImei1SnSpan);
+        if(j < nItemCount[FLAG_IMEI2])  ImeiInc(szItem[FLAG_IMEI2],nImei2SnSpan);
+    }
+    if(0 != vItemsInput.size()) {
+        if(!SnwtoolDataBase.AddItems2Database(vItemsInput)) {
+            swprintf(szPrompt,dim(szPrompt),TEXT("Faild add item %d"),j);
+            AfxMessageBox(szPrompt);
+            return -1;
+        }
+        vItemsInput.clear();
+    }
+    UpdateTestStatus(WM_UPDATE_MSG,PROCESS_PERCENT,(void *)100);
+    swprintf(szPrompt,dim(szPrompt),TEXT("Add %d items finished,ticks=%u"),j,GetTickCount() - dwTicks);
+    AfxMessageBox(szPrompt);
+    return 0;
+}
+#else 
+UINT CProjectBillDlg::GenThread(LPVOID lpParam)
+{
+    TCHAR   szPrompt[260];
+    TCHAR   szItem[FLAG_CNT][256]   = {0};
+    int     nItemCount[FLAG_CNT]    = {0};
+    int     nSnSpan,nWifiMacSpan,nBtMacSnSpan,nImei1SnSpan,nImei2SnSpan;
+    int     nMaxCount               = 0;
+    DWORD   dwTicks         = GetTickCount();
+    RECORD  RecordInput;
+    UpdateTestStatus(WM_UPDATE_MSG,PROCESS_PERCENT,0);
+    if(!SnwtoolDataBase.OpenTableForAddNew()){
+        AfxMessageBox(TEXT("Faild open table"));
+        return -1;
+    }
+    for(int i = 0; i <FLAG_CNT;i ++ ) {
+        nItemCount[i]  = m_Configs.strItemStart[i].empty()?0:m_Configs.nItemCount[i];
+        if(0 < nItemCount[i] ) {
+            swprintf(szItem[i],256,m_Configs.strItemStart[i].c_str());
+        }
+        nMaxCount   = (nItemCount[i] > nMaxCount)?nItemCount[i]:nMaxCount;
+    }
+    nSnSpan         = m_Configs.nItemSpan[0];
+    nWifiMacSpan    = m_Configs.nItemSpan[1];
+    nBtMacSnSpan    = m_Configs.nItemSpan[2];
+    nImei1SnSpan    = m_Configs.nItemSpan[3]; 
+    nImei2SnSpan    = m_Configs.nItemSpan[4];
+    int j;
+    for(j = 0; j < nMaxCount ; j++ ) {
+        for(int i = 0;i < FLAG_CNT; i ++ ) {
+            if(j < nItemCount[i]) {
+                RecordInput.m_strItem[i] = szItem[i];
+            } else if(j == nItemCount[i]){
+                RecordInput.m_strItem[i].clear();
+            }
+        }
+
         if(!SnwtoolDataBase.AddSingleItem2Database(RecordInput)) {
-            AfxMessageBox(TEXT("Faild add item"));
+            swprintf(szPrompt,dim(szPrompt),TEXT("Faild add item %d"),j);
+            AfxMessageBox(szPrompt);
+            return -1;
         }
-        m_AddProgress.SetPos((int)(((float)j*100)/(float)nMaxCount));
-        IntStrIncreaseSkipAlpha (szItem[FLAG_SN]);
-        HexStrIncreaseSkipAlpha (szItem[FLAG_WIFIMAC]);
-        HexStrIncreaseSkipAlpha (szItem[FLAG_BTMAC]);
-        IntStrIncreaseSkipAlpha (szItem[FLAG_IMEI1]);
-        IntStrIncreaseSkipAlpha (szItem[FLAG_IMEI2]);
+
+        if(j < nItemCount[FLAG_SN])     IntStrIncreaseSkipAlpha (szItem[FLAG_SN],nSnSpan);
+        if(j < nItemCount[FLAG_WIFIMAC])HexStrIncreaseSkipAlpha (szItem[FLAG_WIFIMAC],nWifiMacSpan);
+        if(j < nItemCount[FLAG_BTMAC])  HexStrIncreaseSkipAlpha (szItem[FLAG_BTMAC],nBtMacSnSpan);
+        if(j < nItemCount[FLAG_IMEI1])  ImeiInc(szItem[FLAG_IMEI1],nImei1SnSpan);
+        if(j < nItemCount[FLAG_IMEI2])  ImeiInc(szItem[FLAG_IMEI2],nImei2SnSpan);
+        if(0 == (j%50)) UpdateTestStatus(WM_UPDATE_MSG,PROCESS_PERCENT,(void *)((j*100)/nMaxCount));
     }
-    AfxMessageBox(TEXT("add item finished"));
+    UpdateTestStatus(WM_UPDATE_MSG,PROCESS_PERCENT,(void *)100);
+    swprintf(szPrompt,dim(szPrompt),TEXT("Add %d items finished,ticks=%u"),j,GetTickCount() - dwTicks);
+    AfxMessageBox(szPrompt);
     return 0;
 }
 
+
+#endif
 void CProjectBillDlg::OnBnClickedButtonGenbill()
 {
     // TODO: Add your control notification handler code here
+    TCHAR szPrompt[128];
+    if(m_pGenThread) {
+        AfxMessageBox(TEXT("Application is busy!!!"));
+        return ;
+    }
     Update2Config();
     for(int i = FLAG_SN ; i < FLAG_CNT ; i ++ ) {
         if(!CheckItemValid(m_Configs.strItemStart[i - FLAG_SN].c_str(),i )) {
-            AfxMessageBox(m_Configs.strItemStart[i - FLAG_SN].c_str());
+            swprintf(szPrompt,128,TEXT("Item %s's start invalid!!!"),m_Configs.strItemName[i].c_str());
+            AfxMessageBox(szPrompt);
+            return ;
+        }
+    }
+    for(int i = 0; i < FLAG_CNT; i++ ) {
+        int span = m_Configs.nItemSpan[i];
+        if( 0 > span ||10 < span) {
+            swprintf(szPrompt,128,TEXT("Item %s's span invalid!!!"),m_Configs.strItemName[i].c_str());
+            AfxMessageBox(szPrompt);
             return ;
         }
     }
     m_pGenThread = AfxBeginThread(::GenThread,(LPVOID)this);
 }
-void CProjectBillDlg::Update2Config()
+BOOL CProjectBillDlg::Update2Config()
 {
     TCHAR szText[128];
+    /*item start**/
     for(int i = 0 ; i < FLAG_CNT; i++) {
         memset(szText,0,sizeof(szText));
         GetDlgItemText(IDC_EDIT_SN + i,szText,128);
-        m_Configs.strItemStart[FLAG_SN + i] = szText;
+        m_Configs.strItemStart[i] = szText;
     }
+    /*item length**/
     for(int i = 0 ; i < FLAG_CNT; i++) {
         memset(szText,0,sizeof(szText));
         GetDlgItemText(IDC_EDIT_SNLENGTH + i,szText,128);
-        m_Configs.nItemCount[FLAG_SN + i] = _ttoi(szText);
+        m_Configs.nItemCount[i] = _ttoi(szText);
     }
+    /*item span**/
     for(int i = 0 ; i < FLAG_CNT; i++) {
         memset(szText,0,sizeof(szText));
         GetDlgItemText(IDC_EDIT_SNSPAN + i,szText,128);
-        m_Configs.nItemSpan[FLAG_SN + i] = _ttoi(szText);
+        m_Configs.nItemSpan[i] = _ttoi(szText);
     }
+    return TRUE;
 }
 void CProjectBillDlg::OnClose()
 {
     // TODO: Add your message handler code here and/or call default
-
+    if(!IsConfigurable()) {
+        AfxMessageBox(TEXT("Tool is busy,please waiting!!!"));
+        return ;
+    }
     Update2Config();
     if(!m_Configs.SaveToolSetting(TEXT(""))) {
         AfxMessageBox(TEXT("Save config fail!!!"));
         return ;
     }
-    
     CDialog::OnClose();
 }
+LRESULT CProjectBillDlg::OnHandleUpdateMsg(WPARAM wParam,LPARAM lParam)
+{
+    TCHAR szPrompt[128];
+    switch(wParam) {
+    case PROCESS_PERCENT:
+        m_AddProgress.SetPos((int)lParam);
+        swprintf(szPrompt,128,TEXT("%d%%"),lParam);
+        SetDlgItemText(IDC_STATIC_PERCENT,szPrompt);
+        break;
+    }
 
+    return 0;
+}
+BOOL CProjectBillDlg::IsConfigurable()
+{
+    return NULL == m_pGenThread;
+}
+void CProjectBillDlg::OnUpdateSettingDatabase(CCmdUI *pCmdUI)
+{
+    // TODO: Add your command update UI handler code here
+    pCmdUI->Enable(IsConfigurable());
+}

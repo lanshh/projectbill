@@ -549,7 +549,7 @@ public:
     commiteesult_exit:
         return FALSE;
     }
-    BOOL AddItems2Database(vector<RECORD> &vsRecord)
+    BOOL AddItems2Database(vector<RECORD>&vsRecords)
     {
         if(!m_pRcdSet) {
             goto additem2database_exit;
@@ -557,13 +557,13 @@ public:
         if(!m_pRcdSet->IsOpen()) {
             goto additem2database_exit;
         }
-        for(size_t i = 0; i < vsRecord.size();i ++){
+        for(size_t i = 0; i < vsRecords.size();i ++) {
             if(!m_pRcdSet->AddNew()) {
                 goto additem2database_exit;
             }
-            for(int j = FLAG_SN; j  < FLAG_CNT; j ++ ) {
-                if(vsRecord[i].m_strItem[j].empty()) continue;
-                if(!m_pRcdSet->SetFieldValue(TypeToStr(j).c_str(),vsRecord[i].m_strItem[j])) {
+            for(int j = 0; j  < FLAG_CNT; j ++ ) {
+                if(vsRecords[i].m_strItem[j].empty()) continue;
+                if(!m_pRcdSet->SetFieldValue(TypeToStr(j).c_str(),vsRecords[i].m_strItem[j])) {
                     goto additem2database_exit;
                 }
             }
@@ -575,6 +575,7 @@ public:
     additem2database_exit:
         return FALSE;
     }
+
     BOOL AddSingleItem2Database(RECORD&vsRecord)
     {
         if(!m_pRcdSet) {
@@ -600,7 +601,6 @@ public:
     additem2database_exit:
         return FALSE;
     }
-
     BOOL AddSingleItem2Database(vector<SItem> &vsItem)
     {
         if(!m_pRcdSet) {

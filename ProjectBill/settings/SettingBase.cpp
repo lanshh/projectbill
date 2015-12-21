@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "SettingBase.h"
+#include "../common/utils.h"
 const TCHAR * base64char = TEXT("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/");
 TCHAR * base64_encode( const TCHAR * bindata, TCHAR * base64, int binlength )
 {
@@ -836,7 +837,7 @@ bool CheckItemValid(const TCHAR *szItem,unsigned int  flag)
 {
     if(FLAG_SN == flag) {
         DWORD dwStrLen = _tcslen(szItem);
-        if(0 == dwStrLen){
+        if(0 == dwStrLen) {
             goto tag_exit;
         }
     } else if (FLAG_WIFIMAC== flag||FLAG_BTMAC== flag) {
@@ -844,7 +845,7 @@ bool CheckItemValid(const TCHAR *szItem,unsigned int  flag)
             goto tag_exit;
         }
     } else if (FLAG_IMEI1== flag||FLAG_IMEI2== flag) {
-        if(!CheckImei(szItem,1)){
+        if(!CheckImei(szItem,0)) {
             goto tag_exit;
         }
     } else {
@@ -908,7 +909,7 @@ bool CheckImei(const TCHAR *szImei ,unsigned int  flag)
     }
     return FALSE;
 }
-bool CehckImeiAddCD(TCHAR *szImei)
+bool CheckImeiAddCD(TCHAR *szImei)
 {
     bool        bRet        = false;
     INT         strLen      = 0;
@@ -930,7 +931,22 @@ bool CehckImeiAddCD(TCHAR *szImei)
     }
     return bRet;
 }
-
-
+bool ImeiInc(TCHAR *szImei,int span)
+{
+    INT64   int64Imei   = 0;
+    int     ImeiLength = _tcslen(szImei);
+    if(IMEI_LEN == ImeiLength) {
+        szImei[IMEI_LEN - 1] = 0;
+        IntStrIncreaseSkipAlpha(szImei);
+        int64Imei = _ttoi64(szImei);
+        /*int64Imei   /= 10; **/
+        szImei[IMEI_LEN -1] = GenCD(int64Imei) + TEXT('0');
+        return TRUE;
+    } else if(IMEI_LEN - 1== ImeiLength){
+        IntStrIncreaseSkipAlpha(szImei);
+        return TRUE;
+    }
+    return FALSE;
+}   
 
 

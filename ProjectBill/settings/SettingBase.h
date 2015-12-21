@@ -236,7 +236,8 @@ bool CheckMac       (const TCHAR *szImei,unsigned int flag);
 bool CheckImei      (const char  *szImei,unsigned int flag);
 bool CheckImei      (const TCHAR *szImei,unsigned int flag);
 bool CheckItemValid (const TCHAR *szItem,unsigned int flag);
-bool CehckImeiAddCD (TCHAR *szImei);
+bool CheckImeiAddCD (TCHAR *szImei);
+bool ImeiInc        (TCHAR *szImei,int span);
 
 
 #endif

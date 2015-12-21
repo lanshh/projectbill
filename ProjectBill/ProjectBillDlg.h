@@ -41,10 +41,12 @@ protected:
 public:
     afx_msg void OnSettingDatabase();
     void    InitGroupControls();
-    void    Update2Config();
+    BOOL    Update2Config();
     UINT    GenThread(LPVOID lpParam);
-    void    UpdateTestStatus(int State, int nResult,const TCHAR* strItem,TCHAR* strDesc);
+    void    UpdateTestStatus(int Msg, int MsgId,VOID *strDesc);
+    afx_msg LRESULT OnHandleUpdateMsg(WPARAM wParam,LPARAM lParam);
     CWinThread  *m_pGenThread;
+    BOOL    m_bUserAbort;
     CGroupControl m_GrpSn;
     CGroupControl m_GrpWifiMac;
     CGroupControl m_GrpBtMac;
@@ -53,4 +55,6 @@ public:
     afx_msg void OnBnClickedButtonGenbill();
     afx_msg void OnClose();
     CProgressCtrl m_AddProgress;
+    afx_msg void OnUpdateSettingDatabase(CCmdUI *pCmdUI);
+    BOOL    IsConfigurable();
 };
