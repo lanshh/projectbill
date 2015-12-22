@@ -194,7 +194,9 @@ public:
     int          nItemSpan[5];
 
     /*Create Table Parms**/
-    int          nColCount;
+    bool         bCreateNewTable;
+    std::wstring strNewTableName;
+    int          nTableColCount;
     std::wstring strTableColumnName[MAX_COLUMN];
     std::wstring strTableType[MAX_COLUMN];
     bool         nCanBeNull[MAX_COLUMN];    

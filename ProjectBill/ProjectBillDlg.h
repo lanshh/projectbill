@@ -57,4 +57,5 @@ public:
     CProgressCtrl m_AddProgress;
     afx_msg void OnUpdateSettingDatabase(CCmdUI *pCmdUI);
     BOOL    IsConfigurable();
+    afx_msg void OnBnClickedCheckNewtable();
 };

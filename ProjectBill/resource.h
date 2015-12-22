@@ -47,6 +47,9 @@
 #define IDC_EDIT_IMEI2SPAN              1039
 #define IDC_PROGRESS1                   1040
 #define IDC_STATIC_PERCENT              1041
+#define IDC_CHECK_NEWTABLE              1042
+#define IDC_EDIT1                       1043
+#define IDC_EDIT_NEWTABLE_NAME          1043
 #define IDC_EDIT_USER                   1046
 #define IDC_EDIT_PWD                    1047
 #define IDC_EDIT_DATABASENAME           1048
@@ -81,7 +84,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        130
 #define _APS_NEXT_COMMAND_VALUE         32774
-#define _APS_NEXT_CONTROL_VALUE         1042
+#define _APS_NEXT_CONTROL_VALUE         1044
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

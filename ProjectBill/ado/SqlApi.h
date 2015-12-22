@@ -162,6 +162,7 @@ public:
         if(m_pDb->Open(strConnection.c_str())) {	
             return TRUE;
         } 
+        m_strLastError = TEXT("Open:")+ m_pDb->GetLastErrorString();  
         delete m_pDb;
         m_pDb = NULL;
         return FALSE;
@@ -172,9 +173,11 @@ public:
             m_pRcdSet->Close();
         }
         delete m_pRcdSet;
+        m_pRcdSet = NULL;
         if(!m_pDb) return FALSE;
         m_pDb->Close();
         delete m_pDb;
+        m_pDb = NULL;
         return TRUE;
     }
     BOOL GetFieldInfo(vector<CADOFieldInfo> &vfield)
@@ -196,13 +199,8 @@ public:
     }
     wstring GetWriteFlag()
     {
-        if(m_pConfigs->bReadInfo) {
-            return m_pConfigs->strReadFlag;
-        } else {
             return m_pConfigs->strWriteFlag;
         }
-        
-    }
     wstring GetCheckFlag()
     {
         return m_pConfigs->strReadFlag;
@@ -246,24 +244,25 @@ public:
                 }
             }
             
-        } else { /*write flag & time**/
-            if(!m_pConfigs->strWriteFlag.empty()) {
+        } else { /*write time**/
+            if(!m_pConfigs->strWriteTimeFlag.empty()) {
                 if(item.empty()) {
-                    item =  m_pConfigs->strWriteFlag;
+                    item =  m_pConfigs->strWriteTimeFlag;
                 } else {
-                    item += TEXT(",") + m_pConfigs->strWriteFlag;
+                    item += TEXT(",") + m_pConfigs->strWriteTimeFlag;
                 }
             }
         }
 
         /*we always need write flag **/
-        if(!m_pConfigs->strWriteTimeFlag.empty()) {
+        if(!m_pConfigs->strWriteFlag.empty()) {
             if(item.empty()) {
-                item =  m_pConfigs->strWriteTimeFlag;
+                item =  m_pConfigs->strWriteFlag;
             } else {
-                item += TEXT(",") + m_pConfigs->strWriteTimeFlag;
+                item += TEXT(",") + m_pConfigs->strWriteFlag;
             }
         }
+
 
         /*recovery flag **/
         if(m_pConfigs->bRecovery) {
@@ -443,6 +442,7 @@ public:
         }
         return TRUE;
     }
+    /*read write recovery flag and time **/
     wstring GetCommitResultItemStr()
     {
         wstring item = TEXT("");
@@ -735,6 +735,22 @@ public:
         }
         //m_pDb->CommitTransaction();
 
+        return TRUE;
+    }
+    BOOL CreateTable(TCHAR *strCmd)
+    {
+        TCHAR           szPrompt[128];
+        wstring         Codition,Items;
+        TCHAR           strSqlQuery[512];
+        if(!Open(FALSE)) {
+            return FALSE;
+        }
+        if(!m_pDb->Execute(strCmd)) {
+            /*m_strLastError = GetLocalString(TEXT("IDS_DB_CREATE_TABLE_FAIL")); **/
+            m_strLastError = TEXT("Execute:") + m_pDb->GetLastErrorString();
+            return FALSE;
+        }
+        Close();
         return TRUE;
     }
 };

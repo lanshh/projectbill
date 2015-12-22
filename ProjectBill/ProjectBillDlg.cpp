@@ -87,6 +87,7 @@ BEGIN_MESSAGE_MAP(CProjectBillDlg, CDialog)
     ON_MESSAGE(WM_UPDATE_MSG,&CProjectBillDlg::OnHandleUpdateMsg)
     ON_WM_CLOSE()
     ON_UPDATE_COMMAND_UI(ID_SETTING_DATABASE, &CProjectBillDlg::OnUpdateSettingDatabase)
+    ON_BN_CLICKED(IDC_CHECK_NEWTABLE, &CProjectBillDlg::OnBnClickedCheckNewtable)
 END_MESSAGE_MAP()
 
 
@@ -146,6 +147,10 @@ BOOL CProjectBillDlg::OnInitDialog()
         swprintf(szTemp,sizeof(szTemp)/sizeof(szTemp[0]),TEXT("%d"),m_Configs.nItemSpan[FLAG_SN + i]);
         SetDlgItemText(IDC_EDIT_SNSPAN + i,szTemp);
     }
+
+    ((CButton * )GetDlgItem(IDC_CHECK_NEWTABLE)) ->SetCheck(m_Configs.bCreateNewTable?BST_CHECKED:BST_UNCHECKED);
+    SetDlgItemText(IDC_EDIT_NEWTABLE_NAME,m_Configs.strNewTableName.c_str());
+    GetDlgItem(IDC_EDIT_NEWTABLE_NAME)->EnableWindow(m_Configs.bCreateNewTable);
 
     InitGroupControls();
 
@@ -300,6 +305,7 @@ UINT CProjectBillDlg::GenThread(LPVOID lpParam)
 #else 
 UINT CProjectBillDlg::GenThread(LPVOID lpParam)
 {
+    TCHAR   szCmd[5000];
     TCHAR   szPrompt[260];
     TCHAR   szItem[FLAG_CNT][256]   = {0};
     int     nItemCount[FLAG_CNT]    = {0};
@@ -308,6 +314,35 @@ UINT CProjectBillDlg::GenThread(LPVOID lpParam)
     DWORD   dwTicks         = GetTickCount();
     RECORD  RecordInput;
     UpdateTestStatus(WM_UPDATE_MSG,PROCESS_PERCENT,0);
+
+    if(m_Configs.bCreateNewTable) {
+        if(m_Configs.strNewTableName.empty()) {
+            AfxMessageBox(TEXT("Table name empty\r\nFaild create table!!!"),MB_ICONERROR);
+            return -1;
+        }
+        swprintf(szCmd,sizeof(szCmd)/sizeof(szCmd[0]),TableFormat,m_Configs.strNewTableName.c_str());
+        if(SnwtoolDataBase.CreateTable(szCmd)){
+            /*
+            swprintf(szPrompt,sizeof(szPrompt)/sizeof(szPrompt[0]),
+                TEXT("Create Table(%s) on Database(%s) success!"),
+                m_Configs.strDataBaseTable.c_str(),
+                m_Configs.strDataBaseName.c_str()
+                );
+            AfxMessageBox(szPrompt);
+            **/
+        } else {
+            swprintf(szPrompt,sizeof(szPrompt)/sizeof(szPrompt[0]),
+                TEXT("Create Table(%s) on Database(%s) Fail\r\n %s!!!"),
+                m_Configs.strNewTableName.c_str(),
+                m_Configs.strDataBaseName.c_str(),
+                SnwtoolDataBase.GetLastErr().c_str()
+                );
+            AfxMessageBox(szPrompt,MB_ICONERROR);
+            return -1;
+        }
+        m_Configs.strDataBaseTable = m_Configs.strNewTableName;
+    }
+
     if(!SnwtoolDataBase.OpenTableForAddNew()){
         AfxMessageBox(TEXT("Faild open table"));
         return -1;
@@ -402,6 +437,12 @@ BOOL CProjectBillDlg::Update2Config()
         GetDlgItemText(IDC_EDIT_SNSPAN + i,szText,128);
         m_Configs.nItemSpan[i] = _ttoi(szText);
     }
+
+    m_Configs.bCreateNewTable = ((CButton * )GetDlgItem(IDC_CHECK_NEWTABLE))->GetCheck()==BST_CHECKED;
+    memset(szText,0,sizeof(szText));
+    GetDlgItemText(IDC_EDIT_NEWTABLE_NAME,szText,128);
+    m_Configs.strNewTableName = szText;
+
     return TRUE;
 }
 void CProjectBillDlg::OnClose()
@@ -439,4 +480,11 @@ void CProjectBillDlg::OnUpdateSettingDatabase(CCmdUI *pCmdUI)
 {
     // TODO: Add your command update UI handler code here
     pCmdUI->Enable(IsConfigurable());
+}
+
+void CProjectBillDlg::OnBnClickedCheckNewtable()
+{
+    // TODO: Add your control notification handler code here
+    GetDlgItem(IDC_EDIT_NEWTABLE_NAME)->EnableWindow(
+        ((CButton * )GetDlgItem(IDC_CHECK_NEWTABLE))->GetCheck()==BST_CHECKED);
 }

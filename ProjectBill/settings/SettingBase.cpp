@@ -178,22 +178,23 @@ bool CIniSettingBase::LoadToolSetting(std::wstring strConfig)
         return false;
     }**/
 
-    nColCount = _wtoi(GetStr(TEXT("TBCOLCOUNT")).c_str());
+    /*new table params **/
+    bCreateNewTable = 1 == _wtoi(GetStr(TEXT("CREATENEWTABLE")).c_str());
+    strNewTableName = GetStr(TEXT("NEWTABLENAME"));
+
+    nTableColCount = _wtoi(GetStr(TEXT("TBCOLCOUNT")).c_str());
     nItemNum = MAX_COLUMN;
     ParseStr(GetStr(TEXT("TBCOLNAME")),strTableColumnName,&nItemNum);
-    if(nColCount != nItemNum) return false;
+    if(nTableColCount != nItemNum) return false;
 
     nItemNum = MAX_COLUMN;
     ParseStr(GetStr(TEXT("TBCOLTYPE")),strTableType,&nItemNum);
-    if(nColCount != nItemNum) return false;
+    if(nTableColCount != nItemNum) return false;
 
     nItemNum = MAX_COLUMN;
     ParseBools(GetStr(TEXT("TBCOLNULL")),nCanBeNull,&nItemNum);
-    if(nColCount != nItemNum) return false;
+    if(nTableColCount != nItemNum) return false;
 
-
-
-    
     nSupportDatabse = 6;
     ParseStr(GetStr(TEXT("SUPPORTDB")),strSupportDatabse,&nSupportDatabse);
     nDataBaseType   =_wtoi(GetStr(TEXT("DETABASETYPE")).c_str());
@@ -330,12 +331,12 @@ bool CIniSettingBase::SaveToolSetting(std::wstring strConfig)
         SetStr( TEXT("ITEMSPAN"),item); 
 
         /*Create Table Parms**/
-
-        if(nColCount > 100 ) nColCount = 100;
-        swprintf(szTemp1,sizeof(szTemp1)/sizeof(szTemp1[0]),TEXT("%d"),nColCount);
+        SetStr( TEXT("CREATENEWTABLE")  , bCreateNewTable?checke:unckeck); 
+        SetStr( TEXT("NEWTABLENAME")    , strNewTableName); 
+        if(nTableColCount > MAX_COLUMN ) nTableColCount = MAX_COLUMN;
+        swprintf(szTemp1,sizeof(szTemp1)/sizeof(szTemp1[0]),TEXT("%d"),nTableColCount);
         SetStr( TEXT("TBCOLCOUNT")      , std::wstring(szTemp1)); 
-
-        for( i = 0; i < nColCount; i ++) {
+        for( i = 0; i < nTableColCount; i ++) {
             if(0==i) {
                 item = strTableColumnName[i];
             } else {
@@ -343,8 +344,7 @@ bool CIniSettingBase::SaveToolSetting(std::wstring strConfig)
             }
         }
         SetStr( TEXT("TBCOLNAME"),item); 
-
-        for( i = 0; i < nColCount; i ++) {
+        for( i = 0; i < nTableColCount; i ++) {
               if(0==i) {
                   item = strTableType[i];
               } else {
@@ -352,9 +352,7 @@ bool CIniSettingBase::SaveToolSetting(std::wstring strConfig)
               }
           }
         SetStr( TEXT("TBCOLTYPE"),item); 
-
-
-        for( i = 0; i < nColCount; i ++) {
+        for( i = 0; i < nTableColCount; i ++) {
             if(0==i) { 
                 item = (nCanBeNull[i]?checke:unckeck);
             } else {
@@ -363,7 +361,6 @@ bool CIniSettingBase::SaveToolSetting(std::wstring strConfig)
         
         }
         SetStr( TEXT("TBCOLNULL"),item);
-
 
         return pIniFile->Save(szFileName);
     }
