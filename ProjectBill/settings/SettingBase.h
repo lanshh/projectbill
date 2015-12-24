@@ -1,6 +1,6 @@
 #ifndef _SETTINGBASE_H_
 #define _SETTINGBASE_H_
-#define APP_VER " V1.0.1"
+#define APP_VER " V1.0.2"
 #include "./inifile.h"
 #include <vector>
 #define LAN_ACTION TRUE
@@ -17,6 +17,9 @@
 
 #define IMEI_LEN                15
 #define MAC_LEN                 6
+
+#define COL_WOID                0
+#define MAX_COLUMN              100
 
 class CSettingBase
 {
@@ -78,11 +81,7 @@ typedef struct{
     double  fBatteryCurrent;
     double  fChargerCurrent;
 }STRUCT_POWER_CONFIG,*PSTRUCT_POWER_CONFIG;
-#define NVM_CALI    0
-#define NVM_FIX     1
-#define NVM_SEC     2
-#define MAX_FLS     3
-#define MAX_COLUMN  100
+
 class CIniSettingBase:public CSettingBase
 {
 private:
@@ -177,7 +176,7 @@ public:
     int          nPrimaryKey;
     bool         bItemUsed[5];
     std::wstring strItemName[5];
-    std::wstring strItemFlag[5];
+    /*std::wstring strItemFlag[5]; **/
 
     /*check **/
     std::wstring strReadFlag; 
@@ -188,10 +187,7 @@ public:
     /*recovery flag**/
     std::wstring strRecoveryFlag;
     std::wstring strRecoveryTimeFlag;
-    /*Ui Settings**/
-    std::wstring strItemStart[5];
-    int          nItemCount[5];
-    int          nItemSpan[5];
+
 
     /*Create Table Parms**/
     bool         bCreateNewTable;
@@ -199,7 +195,15 @@ public:
     int          nTableColCount;
     std::wstring strTableColumnName[MAX_COLUMN];
     std::wstring strTableType[MAX_COLUMN];
-    bool         nCanBeNull[MAX_COLUMN];    
+    bool         nCanBeNull[MAX_COLUMN];
+
+    /*Gnerate Settings**/
+    std::wstring strItemStart[5]; /*SN WIFIMAC BTMAC IMEI1 IMEI2 **/
+    int          nItemCount[5];
+    int          nItemSpan[5];
+
+    bool         bGenWoid;
+    std::wstring strWoid;
 
 };
 class CIniLocalLan:public CSettingBase

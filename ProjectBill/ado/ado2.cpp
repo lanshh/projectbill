@@ -90,7 +90,7 @@ BOOL CADODatabase::Open(LPCTSTR lpstrConnection, LPCTSTR lpstrUserID, LPCTSTR lp
 	if(_tcscmp(lpstrConnection, _T("")) != 0)
 		m_strConnection = lpstrConnection;
 
-	ASSERT(!m_strConnection.IsEmpty());
+    ASSERT(!m_strConnection.empty());
 
 	try
 	{
@@ -180,7 +180,7 @@ BOOL CADORecordset::Open(_ConnectionPtr mpdb, LPCTSTR lpstrExec, int nOption)
     if(_tcscmp(lpstrExec, _T("")) != 0)
         m_strQuery = lpstrExec;
 
-    ASSERT(!m_strQuery.IsEmpty());
+    ASSERT(!m_strQuery.empty());
 
     if(m_pConnection == NULL)
         m_pConnection = mpdb;
@@ -1777,7 +1777,7 @@ BOOL CADORecordset::Find(LPCTSTR lpFind, int nSearchDirection)
 	m_strFind = lpFind;
 	m_nSearchDirection = nSearchDirection;
 
-	ASSERT(!m_strFind.IsEmpty());
+    ASSERT(!m_strFind.empty());
 
 	if(m_nSearchDirection == searchForward)
 	{
@@ -1958,7 +1958,7 @@ BOOL CADORecordset::Execute(CADOCommand* pAdoCommand)
 	if(IsOpen())
 		Close();
 
-	ASSERT(!pAdoCommand->GetText().IsEmpty());
+    ASSERT(!pAdoCommand->GetText().empty());
 	try
 	{
 		m_pConnection->CursorLocation = adUseClient;
@@ -2099,7 +2099,7 @@ BOOL CADOCommand::AddParameter(wstring strName, int nType, int nDirection, long 
 
 void CADOCommand::SetText(wstring strCommandText)
 {
-	ASSERT(!strCommandText.IsEmpty());
+    ASSERT(!strCommandText.empty());
 
 	m_strCommandText = strCommandText;
 

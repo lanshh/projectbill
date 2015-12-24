@@ -12,7 +12,8 @@ typedef struct
 } SItem;
 typedef struct  
 {
-    wstring m_strItem[FLAG_CNT];
+    int     nItemCount;
+    wstring m_strItem[FLAG_CNT + 1];
 } RECORD;
 /*
 *class for sql connect 
@@ -567,6 +568,11 @@ public:
                     goto additem2database_exit;
                 }
             }
+            if(!vsRecords[i].m_strItem[FLAG_CNT + COL_WOID].empty()) {
+                if(!m_pRcdSet->SetFieldValue(m_pConfigs->strTableColumnName[COL_WOID].c_str(),vsRecords[i].m_strItem[FLAG_CNT + COL_WOID])) {
+                    goto additem2database_exit;
+                }
+            }
         }
         if(!m_pRcdSet->Update()) {
             goto additem2database_exit;
@@ -594,6 +600,13 @@ public:
                 goto additem2database_exit;
             }
         }
+        if(!vsRecord.m_strItem[FLAG_CNT + COL_WOID].empty()) {
+            if(!m_pRcdSet->SetFieldValue(m_pConfigs->strTableColumnName[COL_WOID].c_str(),vsRecord.m_strItem[FLAG_CNT + COL_WOID])) {
+                goto additem2database_exit;
+            }
+        }
+
+
         if(!m_pRcdSet->Update()) {
             goto additem2database_exit;
         }

@@ -58,4 +58,5 @@ public:
     afx_msg void OnUpdateSettingDatabase(CCmdUI *pCmdUI);
     BOOL    IsConfigurable();
     afx_msg void OnBnClickedCheckNewtable();
+    afx_msg void OnBnClickedCheckMWoid();
 };

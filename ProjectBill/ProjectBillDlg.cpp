@@ -7,6 +7,7 @@
 #include "ProjectBillDlg.h"
 /*#include "./common/strConvert.h" **/
 #include "./ADO/SqlApi.h"
+#include "./label/label.h"
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -29,26 +30,57 @@ UINT GenThread(LPVOID lpParam)
 class CAboutDlg : public CDialog
 {
 public:
-	CAboutDlg();
-
+    CAboutDlg(CIniSettingBase &Configs,CIniLocalLan &LocalLang);
 // Dialog Data
 	enum { IDD = IDD_ABOUTBOX };
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
+private:
+    CLabel          m_rklink;
+    CLabel          m_AppName;
+    CIniSettingBase &m_Configs;
+    CIniLocalLan    &m_LocalLang;
 // Implementation
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+    virtual BOOL OnInitDialog();
+    afx_msg void OnBnClickedOk();
 };
 
-CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
+CAboutDlg::CAboutDlg(CIniSettingBase &Configs,CIniLocalLan &LocalLang) : CDialog(CAboutDlg::IDD)
+    ,m_Configs(Configs),m_LocalLang(LocalLang)
 {
 }
-
+void CAboutDlg::OnBnClickedOk()
+{
+    // TODO: Add your control notification handler code here
+    OnOK();
+}
+BOOL CAboutDlg::OnInitDialog()
+{
+	CDialog::OnInitDialog();
+	m_rklink.SetTransparent(TRUE);
+	m_rklink.SetFontSize(8);
+	m_rklink.SetFontBold(TRUE);
+    m_rklink.SetText(TEXT("福州瑞芯微电子有限公司"), 0xFF1111);
+    m_rklink.SetLink(TRUE,FALSE);
+    m_rklink.SetHyperLink(CString(TEXT("http://www.rock-chips.com/")));
+    /*m_rklink.SetLinkCursor( (HCURSOR)IDC_IBEAM); **/
+    /*m_rklink.FlashText(TRUE);**/
+    m_AppName.SetTransparent(TRUE);
+    m_AppName.SetFontSize(8);
+    m_AppName.SetFontBold(TRUE);
+    m_AppName.SetText((std::wstring(TEXT("ProjectBill"))+ TEXT(APP_VER)).c_str(), 0xFF1111);
+    /*GetDlgItem(IDC_STATIC_APPNAME)->SetWindowText((m_LocalLang.GetStr(TEXT("APPNAME")) + TEXT(APP_VERSION)).c_str());**/
+    return FALSE;
+}
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
+    DDX_Control(pDX, IDC_STATIC_RK, m_rklink);
+    DDX_Control(pDX, IDC_STATIC_APPNAME, m_AppName);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -88,6 +120,7 @@ BEGIN_MESSAGE_MAP(CProjectBillDlg, CDialog)
     ON_WM_CLOSE()
     ON_UPDATE_COMMAND_UI(ID_SETTING_DATABASE, &CProjectBillDlg::OnUpdateSettingDatabase)
     ON_BN_CLICKED(IDC_CHECK_NEWTABLE, &CProjectBillDlg::OnBnClickedCheckNewtable)
+    ON_BN_CLICKED(IDC_CHECK_M_WOID, &CProjectBillDlg::OnBnClickedCheckMWoid)
 END_MESSAGE_MAP()
 
 
@@ -133,7 +166,7 @@ BOOL CProjectBillDlg::OnInitDialog()
         AfxMessageBox(TEXT("Can not load config file!!!"));
         exit(0);
     }
-
+    SetWindowText((std::wstring(TEXT("ProjectBill")) + TEXT(APP_VER)).c_str());
     for(int i = 0 ; i < FLAG_CNT; i++) {
         SetDlgItemText(IDC_EDIT_SN + i,m_Configs.strItemStart[FLAG_SN + i].c_str());
     }
@@ -148,9 +181,17 @@ BOOL CProjectBillDlg::OnInitDialog()
         SetDlgItemText(IDC_EDIT_SNSPAN + i,szTemp);
     }
 
-    ((CButton * )GetDlgItem(IDC_CHECK_NEWTABLE)) ->SetCheck(m_Configs.bCreateNewTable?BST_CHECKED:BST_UNCHECKED);
+    ((CButton * )GetDlgItem(IDC_CHECK_NEWTABLE))->SetCheck(m_Configs.bCreateNewTable?BST_CHECKED:BST_UNCHECKED);
     SetDlgItemText(IDC_EDIT_NEWTABLE_NAME,m_Configs.strNewTableName.c_str());
     GetDlgItem(IDC_EDIT_NEWTABLE_NAME)->EnableWindow(m_Configs.bCreateNewTable);
+
+    swprintf(szTemp,sizeof(szTemp)/sizeof(szTemp[0]),TEXT("WOID(%s)"),m_Configs.strTableColumnName[COL_WOID].c_str());
+    SetDlgItemText(IDC_CHECK_M_WOID,szTemp);
+    ((CButton * )GetDlgItem(IDC_CHECK_M_WOID))->SetCheck(m_Configs.bGenWoid?BST_CHECKED:BST_UNCHECKED);
+    SetDlgItemText(IDC_EDIT_M_WOID,m_Configs.strWoid.c_str());
+    GetDlgItem(IDC_EDIT_M_WOID)->EnableWindow(m_Configs.bGenWoid);
+
+
 
     InitGroupControls();
 
@@ -168,7 +209,7 @@ void CProjectBillDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
-		CAboutDlg dlgAbout;
+		CAboutDlg dlgAbout(m_Configs,m_LocalLang);
 		dlgAbout.DoModal();
 	}
 	else
@@ -360,6 +401,9 @@ UINT CProjectBillDlg::GenThread(LPVOID lpParam)
     nImei1SnSpan    = m_Configs.nItemSpan[3]; 
     nImei2SnSpan    = m_Configs.nItemSpan[4];
     int j;
+    if(m_Configs.bGenWoid&&(!m_Configs.strWoid.empty())&&(!m_Configs.strTableColumnName[COL_WOID].empty())) {
+        RecordInput.m_strItem[FLAG_CNT + COL_WOID] = m_Configs.strWoid;
+    }
     for(j = 0; j < nMaxCount ; j++ ) {
         for(int i = 0;i < FLAG_CNT; i ++ ) {
             if(j < nItemCount[i]) {
@@ -414,6 +458,15 @@ void CProjectBillDlg::OnBnClickedButtonGenbill()
             return ;
         }
     }
+    if(m_Configs.bGenWoid) {
+        if(m_Configs.strWoid.empty()) {
+            swprintf(szPrompt,128,TEXT("Item %s is null!!!\r\nClick yes continue"),
+                m_Configs.strTableColumnName[COL_WOID].c_str());
+            if(IDYES != AfxMessageBox(szPrompt,MB_YESNO)){
+                return ;
+            }
+        }
+    }
     m_pGenThread = AfxBeginThread(::GenThread,(LPVOID)this);
 }
 BOOL CProjectBillDlg::Update2Config()
@@ -442,6 +495,13 @@ BOOL CProjectBillDlg::Update2Config()
     memset(szText,0,sizeof(szText));
     GetDlgItemText(IDC_EDIT_NEWTABLE_NAME,szText,128);
     m_Configs.strNewTableName = szText;
+
+    m_Configs.bGenWoid = ((CButton * )GetDlgItem(IDC_CHECK_M_WOID))->GetCheck()==BST_CHECKED;
+    memset(szText,0,sizeof(szText));
+    GetDlgItemText(IDC_EDIT_M_WOID,szText,128);
+    m_Configs.strWoid = szText;
+
+
 
     return TRUE;
 }
@@ -487,4 +547,11 @@ void CProjectBillDlg::OnBnClickedCheckNewtable()
     // TODO: Add your control notification handler code here
     GetDlgItem(IDC_EDIT_NEWTABLE_NAME)->EnableWindow(
         ((CButton * )GetDlgItem(IDC_CHECK_NEWTABLE))->GetCheck()==BST_CHECKED);
+}
+
+void CProjectBillDlg::OnBnClickedCheckMWoid()
+{
+    // TODO: Add your control notification handler code here
+    GetDlgItem(IDC_EDIT_M_WOID)->EnableWindow(
+        ((CButton * )GetDlgItem(IDC_CHECK_M_WOID))->GetCheck()==BST_CHECKED);
 }

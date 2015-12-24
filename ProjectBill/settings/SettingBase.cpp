@@ -147,11 +147,14 @@ bool CIniSettingBase::LoadToolSetting(std::wstring strConfig)
     if(FLAG_CNT != nItemNum) {
         return false;
     }
+
+    /*
     nItemNum = FLAG_CNT;
     ParseStr(GetStr(TEXT("ITEMFLAG")),strItemFlag,&nItemNum);
     if(FLAG_CNT != nItemNum) {
         return false;
     }
+    **/
 
     nItemNum = FLAG_CNT;
     ParseBools(GetStr(TEXT("ITEMUSED")),bItemUsed,&nItemNum);
@@ -194,6 +197,10 @@ bool CIniSettingBase::LoadToolSetting(std::wstring strConfig)
     nItemNum = MAX_COLUMN;
     ParseBools(GetStr(TEXT("TBCOLNULL")),nCanBeNull,&nItemNum);
     if(nTableColCount != nItemNum) return false;
+
+    bGenWoid    = 1 == _wtoi(GetStr(TEXT("GENWOID")).c_str());
+    strWoid     = GetStr(TEXT("WOID"));
+    /*strWoidName = GetStr(TEXT("WOIDNAME")); **/
 
     nSupportDatabse = 6;
     ParseStr(GetStr(TEXT("SUPPORTDB")),strSupportDatabse,&nSupportDatabse);
@@ -279,7 +286,7 @@ bool CIniSettingBase::SaveToolSetting(std::wstring strConfig)
         }
         SetStr( TEXT("ITEMNAME"),item); 
 
-        /*item table flag for futear usage **/
+        /*item table flag for futear usage 
         for( i = 0; i < FLAG_CNT; i ++) {
             if(0==i) {
                 item = strItemFlag[i];
@@ -289,6 +296,7 @@ bool CIniSettingBase::SaveToolSetting(std::wstring strConfig)
         
         }
         SetStr( TEXT("ITEMFLAG"),item); 
+        **/
 
         /*ITEMUSED **/
         for( i = 0; i < FLAG_CNT; i ++) {
@@ -361,6 +369,10 @@ bool CIniSettingBase::SaveToolSetting(std::wstring strConfig)
         
         }
         SetStr( TEXT("TBCOLNULL"),item);
+
+        SetStr( TEXT("GENWOID"),bGenWoid?checke:unckeck);
+        SetStr( TEXT("WOID"),strWoid);
+        /*SetStr( TEXT("WOIDNAME"),strWoidName); **/
 
         return pIniFile->Save(szFileName);
     }

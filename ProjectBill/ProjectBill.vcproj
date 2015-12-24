@@ -500,6 +500,18 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="label"
+			>
+			<File
+				RelativePath=".\label\Label.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\label\Label.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>
